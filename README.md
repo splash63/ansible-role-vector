@@ -66,4 +66,4 @@ MIT
 
 ## Author Information
 
-Evgenii - hands-on web/server administration, Beget hosting, MODX.
+Evgenii
