@@ -1,0 +1,10 @@
+---
+# vars file for vector-role
+# Higher-precedence, computed/internal variables - not meant to be tuned
+# casually. Override only if you know what you are doing.
+
+vector_config_file: "{{ vector_config_dir }}/vector.yaml"
+vector_download_url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-{{ vector_arch }}.tar.gz"
+vector_archive_path: "/tmp/vector-{{ vector_version }}-{{ vector_arch }}.tar.gz"
+vector_service_name: vector
+vector_systemd_unit_path: /etc/systemd/system/vector.service

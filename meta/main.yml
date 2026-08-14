@@ -1,0 +1,29 @@
+---
+galaxy_info:
+  author: Evgenii
+  description: Installs and configures Vector (https://vector.dev) from the official release tarball, deployed as a systemd service.
+  license: MIT
+  min_ansible_version: "2.14"
+
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+
+  galaxy_tags:
+    - vector
+    - observability
+    - logging
+    - systemd
+
+dependencies: []

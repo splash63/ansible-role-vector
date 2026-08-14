@@ -1,0 +1,14 @@
+{{ ansible_managed | comment }}
+data_dir: {{ vector_data_dir }}
+
+sources:
+  {{ vector_source }}_input:
+    type: {{ vector_source }}
+
+sinks:
+  {{ vector_sink_type }}_output:
+    type: {{ vector_sink_type }}
+    inputs:
+      - {{ vector_source }}_input
+    encoding:
+      codec: json

@@ -1,0 +1,17 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=Vector
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+Type=simple
+ExecStart={{ vector_bin_path }} --config {{ vector_config_file }}
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
