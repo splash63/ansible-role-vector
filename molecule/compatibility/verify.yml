@@ -1,0 +1,39 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  vars_files:
+    - ../../defaults/main.yml
+
+  tasks:
+    - name: Проверить наличие бинарника vector
+      ansible.builtin.stat:
+        path: "{{ vector_bin_path }}"
+      register: vector_binary
+
+    - name: Assert — бинарник vector существует
+      ansible.builtin.assert:
+        that:
+          - vector_binary.stat.exists
+          - vector_binary.stat.islnk
+        fail_msg: "Симлинк {{ vector_bin_path }} на бинарник vector не найден"
+
+    - name: Проверить наличие конфигурации vector
+      ansible.builtin.stat:
+        path: "{{ vector_config_file }}"
+      register: vector_config
+
+    - name: Assert — конфигурация существует
+      ansible.builtin.assert:
+        that:
+          - vector_config.stat.exists
+          - vector_config.stat.pw_name == "root"
+        fail_msg: "Конфигурация {{ vector_config_file }} отсутствует или владелец не root"
+
+    - name: Проверить синтаксис конфигурации vector
+      ansible.builtin.command:
+        cmd: "{{ vector_bin_path }} validate {{ vector_config_file }}"
+      register: vector_validate
+      changed_when: false
+      failed_when: vector_validate.rc != 0
