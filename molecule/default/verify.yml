@@ -1,0 +1,61 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  vars_files:
+    - ../../defaults/main.yml
+  tasks:
+    - name: Проверить, что бинарник vector существует (симлинк в PATH)
+      ansible.builtin.stat:
+        path: "{{ vector_bin_path }}"
+      register: vector_bin_link
+
+    - name: Assert — симлинк на бинарник существует
+      ansible.builtin.assert:
+        that:
+          - vector_bin_link.stat.exists
+          - vector_bin_link.stat.islnk
+        fail_msg: "Симлинк {{ vector_bin_path }} на бинарник vector не найден"
+
+    - name: Проверить, что реальный бинарник распакован
+      ansible.builtin.stat:
+        path: "{{ vector_install_dir }}/bin/vector"
+      register: vector_bin_real
+
+    - name: Assert — бинарник действительно на месте
+      ansible.builtin.assert:
+        that:
+          - vector_bin_real.stat.exists
+          - vector_bin_real.stat.executable
+        fail_msg: "Бинарник vector не найден или не исполняемый в {{ vector_install_dir }}/bin/vector"
+
+    - name: Проверить синтаксис конфигурации vector
+      ansible.builtin.command: "{{ vector_bin_path }} validate {{ vector_config_file }}"
+      register: vector_validate
+      changed_when: false
+      failed_when: vector_validate.rc != 0
+
+    - name: Проверить статус systemd-юнита vector
+      ansible.builtin.systemd:
+        name: "{{ vector_service_name }}"
+      register: vector_service
+
+    - name: Assert — сервис активен и включён в автозапуск
+      ansible.builtin.assert:
+        that:
+          - vector_service.status.ActiveState == "active"
+          - vector_service.status.UnitFileState == "enabled"
+        fail_msg: "Сервис {{ vector_service_name }} не активен или не в автозапуске"
+
+    - name: Проверить, что конфигурационный файл существует с корректными правами
+      ansible.builtin.stat:
+        path: "{{ vector_config_file }}"
+      register: vector_config_stat
+
+    - name: Assert — конфиг существует и владелец root
+      ansible.builtin.assert:
+        that:
+          - vector_config_stat.stat.exists
+          - vector_config_stat.stat.pw_name == "root"
+        fail_msg: "Конфигурационный файл {{ vector_config_file }} отсутствует или владелец не root"

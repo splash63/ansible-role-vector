@@ -1,6 +1,8 @@
 ---
 galaxy_info:
   author: Evgenii
+  role_name: vector_role
+  namespace: evgenii
   description: Installs and configures Vector (https://vector.dev) from the official release tarball, deployed as a systemd service.
   license: MIT
   min_ansible_version: "2.14"

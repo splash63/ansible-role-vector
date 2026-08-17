@@ -1,0 +1,47 @@
+---
+dependency:
+  name: galaxy
+  options:
+    ignore-certs: false
+    ignore-errors: false
+    role-file: requirements.yml
+    requirements-file: requirements.yml
+
+driver:
+  name: docker
+
+platforms:
+  - name: ubuntu-latest
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    pre_build_image: true
+    command: /lib/systemd/systemd
+    privileged: true
+    cgroupns_mode: host
+    tmpfs:
+      - /run
+      - /run/lock
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
+  - name: oraclelinux8
+    image: oraclelinux:8
+    dockerfile: resources/Dockerfile.j2
+    command: /usr/sbin/init
+    privileged: true
+    cgroupns_mode: host
+    tmpfs:
+      - /run
+      - /run/lock
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    pre_build_image: false
+    env:
+      ANSIBLE_PYTHON_INTERPRETER: /usr/bin/python3.11
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "/home/splash/ansible/08-ansible-04-role"
+
+verifier:
+  name: ansible
