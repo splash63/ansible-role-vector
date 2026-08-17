@@ -6,7 +6,7 @@
   vars_files:
     - ../../defaults/main.yml
   tasks:
-    - name: Проверить, что бинарник vector существует (симлинк в PATH)
+    - name: Проверить, что бинарник vector существует
       ansible.builtin.stat:
         path: "{{ vector_bin_path }}"
       register: vector_bin_link
